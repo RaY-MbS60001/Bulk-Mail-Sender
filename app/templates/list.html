@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}My Applications{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>My Applications</h1>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Application Batches</h5>
+        </div>
+        <div class="card-body">
+            {% if batches %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Created</th>
+                                <th>Status</th>
+                                <th>Applications</th>
+                                <th>Sent</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for batch in batches %}
+                            <tr>
+                                <td>{{ batch.id }}</td>
+                                <td>{{ batch.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    {% if batch.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% elif batch.status == 'approved' %}
+                                        <span class="badge bg-success">Approved</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ batch.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ batch.applications.count() }}</td>
+                                <td>{{ batch.applications.filter_by(status='sent').count() }}</td>
+                                <td>
+                                    <a href="{{ url_for('batch.batch_status', batch_id=batch.id) }}" class="btn btn-sm btn-primary">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted">You haven't created any application batches yet.</p>
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">Return to Dashboard</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h3>{{ learnership.name }}</h3>
+            <h6 class="text-muted">{{ learnership.company }}</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <h5>Description</h5>
+                    <p>{{ learnership.description }}</p>
+                    
+                    <h5>Requirements</h5>
+                    <p>{{ learnership.requirements }}</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Details</h5>
+                            <p><strong>Faculty:</strong> {{ learnership.faculty }}</p>
+                            <button class="btn btn-primary select-learnership" 
+                                    data-id="{{ learnership.id }}">Select Learnership</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

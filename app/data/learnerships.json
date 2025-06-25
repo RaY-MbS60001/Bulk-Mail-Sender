@@ -1,0 +1,51 @@
+{
+    "categories": [
+        "IT & Technology",
+        "Business & Finance", 
+        "Engineering",
+        "Healthcare",
+        "Digital Marketing",
+        "Management",
+        "Telecommunications",
+        "Manufacturing",
+        "Hospitality",
+        "Education"
+    ],
+    "learnerships": [
+        {
+            "company": "Diversity Empowerment",
+            "program": "Software Development",
+            "email": "sfisomabaso12242001@gmail.com",
+            "icon": "diversity.png",
+            "category": "IT & Technology"
+        },
+        {
+            "company": "Sparrow Portal",
+            "program": "Business Administration",
+            "email": "sfisomabaso12242001@gmail.com",
+            "icon": "sparrow.png",
+            "category": "Business & Finance"
+        },
+        {
+            "company": "Impactful Co.",
+            "program": "Advanced IT Training",
+            "email": "sihle.nyanga@impactful.co.za",
+            "icon": "impactful.png",
+            "category": "IT & Technology"
+        },
+        {
+            "company": "CSG Skills",
+            "program": "Skill Development Program",
+            "email": "mseleke@csgskills.co.za",
+            "icon": "csgskills.png",
+            "category": "Education"
+        },
+        {
+            "company": "Afrec Consulting",
+            "program": "Consultancy Learnership",
+            "email": "consultant@afrec.co.za",
+            "icon": "afrec.png",
+            "category": "Business & Finance"
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+        <h1 class="display-4 mb-4">Welcome to Bulk Email Application</h1>
+        <p class="lead mb-4">
+            Streamline your learnership application process with our automated email system.
+        </p>
+        {% if not current_user.is_authenticated %}
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Get Started</h5>
+                    <p class="card-text">Sign in with your Google account to start applying for learnerships.</p>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+                        <img src="{{ url_for('static', filename='img/google.png') }}" alt="Google Sign In" height="24" class="me-2">
+                        Sign in with Google
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

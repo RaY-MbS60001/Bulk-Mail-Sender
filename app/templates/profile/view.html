@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <img src="{{ current_user.picture }}" class="rounded-circle mb-3" 
+                         alt="Profile Picture" style="width: 150px;">
+                    <h4>{{ current_user.name }}</h4>
+                    <p class="text-muted">{{ current_user.email }}</p>
+                    <a href="{{ url_for('profile.edit_profile') }}" 
+                       class="btn btn-primary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Profile Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Phone:</strong> {{ current_user.phone or 'Not set' }}</p>
+                    <p><strong>Resume:</strong> 
+                        {% if current_user.resume_file %}
+                            <a href="{{ url_for('static', filename='resumes/' + current_user.resume_file) }}">
+                                View Resume
+                            </a>
+                        {% else %}
+                            Not uploaded
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5>Application Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3>{{ current_user.total_applications }}</h3>
+                                    <p>Total Applications</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h3>{{ current_user.successful_applications }}</h3>
+                                    <p>Successful Applications</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

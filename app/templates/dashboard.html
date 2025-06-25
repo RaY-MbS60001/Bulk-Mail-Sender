@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h2>Welcome, {{ current_user.name }}!</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Quick Actions</h5>
+                <div class="list-group">
+                    <a href="{{ url_for('learnership.list_learnerships') }}" class="list-group-item list-group-item-action">
+                        Browse Learnerships
+                    </a>
+                    <a href="{{ url_for('batch.list_batches') }}" class="list-group-item list-group-item-action">
+                        View Applications
+                    </a>
+                    <a href="{{ url_for('profile.view_profile') }}" class="list-group-item list-group-item-action">
+                        Update Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent Applications</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h3>{{ current_user.total_applications }}</h3>
+                                <p class="mb-0">Total Applications</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-light">
+                            <div class="card-body text-center">
+                                <h3>{{ current_user.successful_applications }}</h3>
+                                <p class="mb-0">Successful</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

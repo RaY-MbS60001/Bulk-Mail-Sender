@@ -1,0 +1,450 @@
+{% extends "base.html" %}
+
+{% block title %}Available Learnerships{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 bg-light sidebar min-vh-100">
+            <div class="pt-3">
+                <h5>Navigation</h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.dashboard') }}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('learnership.list_learnerships') }}">
+                            <i class="fas fa-graduation-cap"></i> Learnerships
+                        </a>
+                    </li>
+<!-- Update the My Applications link in the sidebar -->
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('batch.list_batches') }}">
+        <i class="fas fa-file-alt"></i> My Applications
+    </a>
+</li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('profile.view_profile') }}">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('auth.logout') }}">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-10">
+            <h2 class="mb-4">Available Learnerships</h2>
+            
+            <!-- Statistics -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Learnerships</h5>
+                            <h3 class="text-primary">{{ learnerships|length }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Categories</h5>
+                            <h3 class="text-info">{{ categories|length }}</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <h5 class="card-title">Selected</h5>
+                            <h3 class="text-success" id="selectedCountCard">0</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <button class="btn btn-success btn-lg" id="applyButtonTop" style="display: none;" onclick="applyToSelected()">
+                                <i class="fas fa-paper-plane"></i> Apply Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search and Filters -->
+            <div class="row mb-4">
+                <div class="col-md-5">
+                    <form method="GET" action="{{ url_for('learnership.list_learnerships') }}">
+                        <div class="input-group">
+                            <input type="text" 
+                                   class="form-control" 
+                                   placeholder="Search learnerships..." 
+                                   name="search"
+                                   value="{{ search_query or '' }}">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Filter by Category</label>
+                    <select class="form-select" id="categoryFilter" onchange="filterByCategory()">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                            <option value="{{ category }}" {% if category == selected_category %}selected{% endif %}>
+                                {{ category }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3 text-end">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-secondary" onclick="selectAll()">
+                            <i class="fas fa-check-square"></i> Select All
+                        </button>
+                        <button class="btn btn-outline-secondary" onclick="clearSelection()">
+                            <i class="fas fa-square"></i> Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learnerships Grid -->
+            <div class="row" id="learnershipsContainer">
+                {% if learnerships %}
+                    {% for learnership in learnerships %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow-sm learnership-card">
+                            <div class="card-body d-flex flex-column">
+                                            <div class="form-check position-absolute top-0 end-0 m-2">
+                <!-- REPLACE THE EXISTING INPUT with this: -->
+                <input class="form-check-input learnership-checkbox" 
+                       type="checkbox" 
+                       value="{{ learnership.id or loop.index }}"
+                       data-learnership-id="{{ learnership.id or loop.index }}"
+                       data-company="{{ learnership.company }}"
+                       data-program="{{ learnership.program }}"
+                       data-email="{{ learnership.email }}"
+                       data-category="{{ learnership.category or 'General' }}"
+                       id="learnership{{ learnership.id or loop.index }}">
+            </div>
+                                
+                                <h5 class="card-title text-primary">{{ learnership.program }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <i class="fas fa-building"></i> {{ learnership.company }}
+                                </h6>
+                                
+                                {% if learnership.category %}
+                                    <div class="mb-2">
+                                        <span class="badge bg-info">{{ learnership.category }}</span>
+                                    </div>
+                                {% endif %}
+                                
+                                <p class="card-text flex-grow-1">
+                                    {{ learnership.description[:120] if learnership.description else 'Join our comprehensive training program.' }}...
+                                </p>
+                                
+                                <div class="mt-auto">
+                                    <button class="btn btn-sm btn-outline-primary" onclick="viewDetails({{ learnership.id or loop.index }})">
+                                        <i class="fas fa-info-circle"></i> View Details
+                                    </button>
+                                    <a href="mailto:{{ learnership.email }}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-envelope"></i> Contact
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle"></i> No learnerships found matching your criteria.
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ask AI Button -->
+<button class="btn btn-primary rounded-circle position-fixed bottom-0 end-0 m-4" 
+        style="width: 60px; height: 60px; z-index: 1000;"
+        onclick="openAIChat()">
+    <i class="fas fa-robot"></i>
+</button>
+
+<!-- Learnership Details Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Learnership Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+        let selectedLearnerships = new Map();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        updateUI();
+        
+        // REPLACE THIS SECTION with the new code:
+        document.querySelectorAll('.learnership-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const learnershipData = {
+                    id: this.dataset.learnershipId,
+                    company: this.dataset.company,
+                    program: this.dataset.program,
+                    email: this.dataset.email,
+                    category: this.dataset.category || 'General'
+                };
+                
+                if (this.checked) {
+                    selectedLearnerships.set(this.value, learnershipData);
+                } else {
+                    selectedLearnerships.delete(this.value);
+                }
+                updateUI();
+            });
+        });
+    });
+
+    function updateUI() {
+        const count = selectedLearnerships.size;
+        document.getElementById('selectedCountCard').textContent = count;
+        document.getElementById('applyButtonTop').style.display = count > 0 ? 'block' : 'none';
+    }
+
+    function selectAll() {
+        document.querySelectorAll('.learnership-checkbox').forEach(checkbox => {
+            if (!checkbox.checked) {
+                checkbox.checked = true;
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        });
+    }
+
+    function clearSelection() {
+        document.querySelectorAll('.learnership-checkbox').forEach(checkbox => {
+            if (checkbox.checked) {
+                checkbox.checked = false;
+                checkbox.dispatchEvent(new Event('change'));
+            }
+        });
+    }
+
+    function filterByCategory() {
+        const category = document.getElementById('categoryFilter').value;
+        const search = '{{ search_query or "" }}';
+        let url = '{{ url_for("learnership.list_learnerships") }}';
+        const params = new URLSearchParams();
+        
+        if (category) params.append('category', category);
+        if (search) params.append('search', search);
+        
+        if (params.toString()) {
+            url += '?' + params.toString();
+        }
+        
+        window.location.href = url;
+    }
+
+    function viewDetails(learnershipId) {
+        const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+        modal.show();
+        
+        fetch(`/api/learnerships/${learnershipId}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('modalTitle').textContent = data.program;
+                document.getElementById('modalBody').innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-building"></i> Company</h6>
+                            <p>${data.company}</p>
+                            
+                            <h6><i class="fas fa-tag"></i> Category</h6>
+                            <p><span class="badge bg-info">${data.category || 'Not specified'}</span></p>
+                            
+                            <h6><i class="fas fa-envelope"></i> Contact Email</h6>
+                            <p><a href="mailto:${data.email}">${data.email}</a></p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-check-circle"></i> Status</h6>
+                            <p><span class="badge bg-success">Active</span></p>
+                        </div>
+                    </div>
+                    <hr>
+                    <h6><i class="fas fa-info-circle"></i> Description</h6>
+                    <p>${data.description || 'Join our comprehensive training program to develop your skills and advance your career.'}</p>
+                    <hr>
+                    <h6><i class="fas fa-list-check"></i> Requirements</h6>
+                    <p>${data.requirements || 'Matric certificate, Good communication skills, Willingness to learn'}</p>
+                    <hr>
+                    <div class="text-center">
+                        <a href="mailto:${data.email}?subject=Application for ${data.program}" class="btn btn-primary">
+                            <i class="fas fa-envelope"></i> Apply Now
+                        </a>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('modalBody').innerHTML = `
+                    <div class="alert alert-danger">
+                        Failed to load learnership details.
+                    </div>
+                `;
+            });
+    }
+
+function applyToSelected() {
+    if (selectedLearnerships.size === 0) {
+        alert('Please select at least one learnership');
+        return;
+    }
+
+    // Show confirmation
+    let summary = "You are about to apply to the following learnerships:\n\n";
+    selectedLearnerships.forEach((learnership) => {
+        summary += `- ${learnership.program} at ${learnership.company}\n`;
+    });
+    summary += `\nTotal: ${selectedLearnerships.size} learnership(s)\n\nProceed?`;
+
+    if (!confirm(summary)) {
+        return;
+    }
+
+    // Create a form and submit via POST
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/batch/create';
+    form.style.display = 'none'; // Hide the form
+    
+    // Add CSRF token if available
+    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+    if (csrfMeta) {
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = 'csrf_token';
+        csrfInput.value = csrfMeta.content;
+        form.appendChild(csrfInput);
+    }
+    
+    // Convert Map to array for easier handling
+    const learnershipArray = [];
+    selectedLearnerships.forEach((data, id) => {
+        learnershipArray.push({
+            id: id,
+            company: data.company,
+            program: data.program,
+            email: data.email,
+            category: data.category || 'General'
+        });
+    });
+    
+    // Add the full data as JSON
+    const dataInput = document.createElement('input');
+    dataInput.type = 'hidden';
+    dataInput.name = 'learnership_data';
+    dataInput.value = JSON.stringify(learnershipArray);
+    form.appendChild(dataInput);
+    
+    // Add action type
+    const actionInput = document.createElement('input');
+    actionInput.type = 'hidden';
+    actionInput.name = 'action';
+    actionInput.value = 'create_batch';
+    form.appendChild(actionInput);
+    
+    // Append form to body and submit
+    document.body.appendChild(form);
+    form.submit();
+}
+
+    function openAIChat() {
+        // You can implement an AI chat feature here
+        alert('AI Assistant: How can I help you find the right learnership?');
+    }
+</script>
+
+<style>
+    .sidebar {
+        position: sticky;
+        top: 0;
+        border-right: 1px solid #dee2e6;
+    }
+    
+    .learnership-card {
+        transition: all 0.3s ease;
+        position: relative;
+        border: 1px solid #dee2e6;
+    }
+    
+    .learnership-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        border-color: #0d6efd;
+    }
+    
+    .learnership-checkbox {
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+    }
+    
+    .badge {
+        font-size: 0.875rem;
+    }
+    
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    
+    .nav-link.active {
+        background-color: #0d6efd;
+        color: white !important;
+        border-radius: 5px;
+    }
+    
+    .nav-link:hover {
+        background-color: #e9ecef;
+        border-radius: 5px;
+    }
+    
+    @media (max-width: 768px) {
+        .sidebar {
+            display: none;
+        }
+        
+        .col-md-10 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}

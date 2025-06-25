@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .content {
+            padding: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Application for {{ learnership.program }}</h2>
+        </div>
+        
+        <div class="content">
+            <p>Dear Hiring Manager at {{ learnership.company }},</p>
+            
+            <p>I am writing to express my strong interest in the <strong>{{ learnership.program }}</strong> 
+            learnership opportunity at {{ learnership.company }}.</p>
+            
+            {% if user.cover_letter_template %}
+                <p>{{ user.cover_letter_template }}</p>
+            {% else %}
+                <p>I am excited about the opportunity to develop my skills and contribute to your organization. 
+                I believe this learnership aligns perfectly with my career goals and I am eager to learn and grow 
+                within your company.</p>
+                
+                <p>I am a dedicated and enthusiastic individual ready to commit to the program's requirements 
+                and make the most of this learning opportunity.</p>
+            {% endif %}
+            
+            <p>Please find my resume attached for your review. I would welcome the opportunity to discuss 
+            my application further.</p>
+            
+            <p>Thank you for considering my application. I look forward to hearing from you.</p>
+            
+            <p>Best regards,<br>
+            <strong>{{ user.name }}</strong><br>
+            Email: {{ user.email }}<br>
+            {% if user.phone %}Phone: {{ user.phone }}{% endif %}
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>This email was sent via Bulk Email App on behalf of {{ user.name }}</p>
+        </div>
+    </div>
+</body>
+</html>

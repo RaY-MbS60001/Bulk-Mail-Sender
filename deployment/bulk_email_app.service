@@ -1,0 +1,13 @@
+# deployment/bulk_email_app.service
+[Unit]
+Description=Bulk Email Application
+After=network.target
+
+[Service]
+User=www-data
+WorkingDirectory=/path/to/your/app
+Environment="PATH=/path/to/your/app/venv/bin"
+ExecStart=/path/to/your/app/venv/bin/gunicorn -c deployment/gunicorn_config.py run:app
+
+[Install]
+WantedBy=multi-user.target

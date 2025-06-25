@@ -1,0 +1,63 @@
+<div class="row">
+    <div class="col-md-6">
+        <h6>Batch Information</h6>
+        <p><strong>ID:</strong> #{{ batch.id }}</p>
+        <p><strong>Created:</strong> {{ batch.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        <p><strong>Status:</strong> 
+            <span class="badge bg-{{ {
+                'pending': 'warning',
+                'approved': 'success', 
+                'rejected': 'danger',
+                'sending': 'info',
+                'completed': 'primary',
+                'failed': 'danger'
+            }[batch.status] }}">{{ batch.status }}</span>
+        </p>
+        <p><strong>Total Applications:</strong> {{ batch.applications.count() }}</p>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col">
+        <h6>Applications in this Batch</h6>
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Program</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for application in batch.applications %}
+                    <tr>
+                        <td>{{ application.company_name }}</td>
+                        <td>{{ application.program_name }}</td>
+                        <td>{{ application.category }}</td>
+                        <td>
+                            <span class="badge bg-{{ {
+                                'pending': 'warning',
+                                'sent': 'success',
+                                'failed': 'danger'
+                            }[application.status] }}">{{ application.status }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col">
+        <div class="d-flex gap-2">
+            <a href="/batch/{{ batch.id }}" class="btn btn-primary btn-sm">View Full Details</a>
+            {% if batch.status == 'pending' %}
+                <a href="/batch/{{ batch.id }}/send-all" class="btn btn-success btn-sm">Send All Applications</a>
+            {% endif %}
+        </div>
+    </div>
+</div>

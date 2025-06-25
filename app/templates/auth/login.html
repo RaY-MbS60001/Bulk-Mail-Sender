@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Bulk Email App{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="text-center mb-4">
+                <h1 class="display-6">Bulk Email Application System</h1>
+                <p class="lead text-muted">Choose your login method</p>
+            </div>
+            
+            <div class="row">
+                <!-- Admin Login -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="card-title mb-0">
+                                <i class="fas fa-user-shield"></i> Administrator
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <p>System administrators can manage users, monitor applications, and access system analytics.</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success"></i> User Management</li>
+                                <li><i class="fas fa-check text-success"></i> System Analytics</li>
+                                <li><i class="fas fa-check text-success"></i> Application Monitoring</li>
+                                <li><i class="fas fa-check text-success"></i> Email Service Management</li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{{ url_for('auth.admin_login') }}" class="btn btn-primary btn-block">
+                                <i class="fas fa-sign-in-alt"></i> Admin Login
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Client Login -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h4 class="card-title mb-0">
+                                <i class="fas fa-users"></i> Client
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <p>Clients can submit learnership applications using their Google account for authentication.</p>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check text-success"></i> Submit Applications</li>
+                                <li><i class="fas fa-check text-success"></i> Track Application Status</li>
+                                <li><i class="fas fa-check text-success"></i> Manage Profile</li>
+                                <li><i class="fas fa-check text-success"></i> View Statistics</li>
+                            </ul>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{{ url_for('auth.client_login') }}" class="btn btn-success btn-block">
+                                <i class="fab fa-google"></i> Sign in with Google
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Demo Section -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <h5>Testing & Demo</h5>
+                            <p class="text-muted">For testing purposes, you can create demo accounts</p>
+                            <div class="btn-group" role="group">
+                                <a href="{{ url_for('auth.create_demo_client') }}" class="btn btn-outline-secondary btn-sm">
+                                    Create Demo Client
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

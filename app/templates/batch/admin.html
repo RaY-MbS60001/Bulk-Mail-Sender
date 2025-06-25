@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Batch Administration</h2>
+    
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="list-group">
+                <a href="{{ url_for('batch.admin_batches', status='pending') }}" 
+                   class="list-group-item list-group-item-action 
+                          {{ 'active' if request.args.get('status') == 'pending' }}">
+                    Pending Approval
+                </a>
+                <a href="{{ url_for('batch.admin_batches', status='approved') }}"
+                   class="list-group-item list-group-item-action
+                          {{ 'active' if request.args.get('status') == 'approved' }}">
+                    Approved
+                </a>
+                <a href="{{ url_for('batch.admin_batches', status='rejected') }}"
+                   class="list-group-item list-group-item-action
+                          {{ 'active' if request.args.get('status') == 'rejected' }}">
+                    Rejected
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Batch ID</th>
+                                <th>User</th>
+                                <th>Created</th>
+                                <th>Applications</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for batch in batches %}
+                            <tr>
+                                <td>#{{ batch.id }}</td>
+                                <td>{{ batch.user.name }}</td>
+                                <td>{{ batch.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>{{ batch.applications|length }} applications</td>
+                                <td>
+                                    <button class="btn btn-sm btn-success approve-batch"
+                                            data-batch-id="{{ batch.id }}">
+                                        Approve
+                                    </button>
+                                    <button class="btn btn-sm btn-danger reject-batch"
+                                            data-batch-id="{{ batch.id }}">
+                                        Reject
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function handleBatchAction(batchId, action) {
+    try {
+        const response = await fetch(`/admin/batch/${batchId}/${action}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        if (response.ok) {
+            location.reload();
+        } else {
+            alert(data.error);
+        }
+    } catch (error) {
+        alert('An error occurred');
+    }
+}
+
+document.querySelectorAll('.approve-batch').forEach(button => {
+    button.addEventListener('click', function() {
+        if (confirm('Are you sure you want to approve this batch?')) {
+            handleBatchAction(this.dataset.batchId, 'approve');
+        }
+    });
+});
+
+document.querySelectorAll('.reject-batch').forEach(button => {
+    button.addEventListener('click', function() {
+        if (confirm('Are you sure you want to reject this batch?')) {
+            handleBatchAction(this.dataset.batchId, 'reject');
+        }
+    });
+});
+</script>
+{% endblock %}

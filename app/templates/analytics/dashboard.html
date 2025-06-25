@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block head %}
+{{ super() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Analytics Dashboard</h2>
+    
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h3>{{ total_users }}</h3>
+                    <p>Total Users</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h3>{{ total_applications }}</h3>
+                    <p>Total Applications</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h3>{{ "%.1f"|format(success_rate) }}%</h3>
+                    <p>Success Rate</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Applications by Faculty</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="facultyChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Application Status Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Daily Applications</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function loadCharts() {
+    const response = await fetch('/analytics/data');
+    const data = await response.json();
+    
+    // Faculty Chart
+    new Chart(document.getElementById('facultyChart'), {
+        type: 'pie',
+        data: {
+            labels: Object.keys(data.faculty_stats),
+            datasets: [{
+                data: Object.values(data.faculty_stats),
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+            }]
+        }
+    });
+    
+    // Status Chart
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(data.status_stats),
+            datasets: [{
+                data: Object.values(data.status_stats),
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+            }]
+        }
+    });
+    
+    // Daily Chart
+    new Chart(document.getElementById('dailyChart'), {
+        type: 'line',
+        data: {
+            labels: {{ daily_stats|map(attribute='date')|list|tojson }},
+            datasets: [{
+                label: 'Daily Applications',
+                data: {{ daily_stats|map(attribute='count')|list|tojson }},
+                borderColor: '#36A2EB',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', loadCharts);
+</script>
+{% endblock %}

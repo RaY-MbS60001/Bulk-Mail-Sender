@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Application Batches</h2>
+    
+    <div class="row mt-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Batch ID</th>
+                                <th>Created</th>
+                                <th>Status</th>
+                                <th>Applications</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for batch in batches %}
+                            <tr>
+                                <td>#{{ batch.id }}</td>
+                                <td>{{ batch.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    <span class="badge bg-{{ {
+                                        'pending': 'warning',
+                                        'approved': 'success',
+                                        'rejected': 'danger',
+                                        'sending': 'info',
+                                        'completed': 'primary'
+                                    }[batch.status] }}">
+                                        {{ batch.status }}
+                                    </span>
+                                </td>
+                                <td>{{ batch.applications.count() }} applications</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary view-details" 
+                                            data-batch-id="{{ batch.id }}">
+                                        View Details
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Batch Details Modal -->
+<div class="modal fade" id="batchDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Batch Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="batchDetailsContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.querySelectorAll('.view-details').forEach(button => {
+    button.addEventListener('click', async function() {
+        const batchId = this.dataset.batchId;
+        const response = await fetch(`/batch/${batchId}/details`);
+        const details = await response.text();
+        document.getElementById('batchDetailsContent').innerHTML = details;
+        new bootstrap.Modal(document.getElementById('batchDetailsModal')).show();
+    });
+});
+</script>
+{% endblock %}
